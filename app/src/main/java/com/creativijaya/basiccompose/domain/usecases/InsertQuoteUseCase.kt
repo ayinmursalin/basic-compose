@@ -2,6 +2,8 @@ package com.creativijaya.basiccompose.domain.usecases
 
 import com.creativijaya.basiccompose.data.local.db.entities.QuoteEntity
 import com.creativijaya.basiccompose.data.repository.QuoteRepository
+import com.creativijaya.basiccompose.utils.ResultWrapper
+import com.creativijaya.basiccompose.utils.mapSuspend
 import java.util.Date
 import javax.inject.Inject
 
@@ -11,7 +13,7 @@ class InsertQuoteUseCase @Inject constructor(
     suspend operator fun invoke(
         author: String,
         content: String
-    ): Long {
+    ): ResultWrapper<Long> {
         val entity = QuoteEntity(
             author = author,
             content = content,
@@ -19,6 +21,6 @@ class InsertQuoteUseCase @Inject constructor(
             updatedAt = Date()
         )
 
-        return repository.insertQuote(entity)
+        return repository.insertQuote(entity).mapSuspend { it }
     }
 }
