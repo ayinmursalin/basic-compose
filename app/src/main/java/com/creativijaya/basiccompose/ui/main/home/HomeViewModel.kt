@@ -34,7 +34,7 @@ class HomeViewModel @Inject constructor(
     )
 
     fun increment() {
-        _counterFlow.value += 2
+//        _counterFlow.value += 2
 
         viewModelScope.launch {
             insertQuoteUseCase(

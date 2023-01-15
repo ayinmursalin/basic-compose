@@ -1,5 +1,6 @@
 package com.creativijaya.basiccompose.ui.main.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -29,18 +30,30 @@ import com.creativijaya.basiccompose.utils.ResultWrapper
 import com.creativijaya.basiccompose.utils.Success
 import com.creativijaya.basiccompose.utils.Uninitialized
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    MainScaffold(
+        uiState = uiState,
+        onIncrementClick = viewModel::increment
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainScaffold(
+    uiState: HomeState,
+    onIncrementClick: () -> Unit
+) {
     val snackBarHostState = remember {
         SnackbarHostState()
     }
 
     if (uiState.counter > 0 && uiState.counter % 10 == 0) {
-        LaunchedEffect(key1 = 1) {
+        LaunchedEffect(key1 = uiState.counter) {
             snackBarHostState.showSnackbar(
                 "${uiState.counter}, can be divided by 10"
             )
@@ -60,15 +73,10 @@ fun HomePage(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TextCounter(counter = uiState.counter)
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = {
-                        viewModel.increment()
-                    }
-                ) {
-                    Text(text = "Increment")
-                }
+                TextCounter(
+                    counter = uiState.counter,
+                    onIncrementClick = onIncrementClick
+                )
                 Spacer(modifier = Modifier.height(24.dp))
                 QuoteList(quotesResult = uiState.quotesResult)
             }
@@ -78,15 +86,24 @@ fun HomePage(
 
 @Composable
 fun TextCounter(
-    counter: Int = 0
+    counter: Int = 0,
+    onIncrementClick: () -> Unit = {}
 ) {
+    Log.d("DEBUG_MAIN", "TextCounter - $counter")
     Text(text = "Value: $counter")
+    Spacer(modifier = Modifier.height(16.dp))
+    Button(
+        onClick = onIncrementClick
+    ) {
+        Text(text = "Increment")
+    }
 }
 
 @Composable
 fun QuoteList(
     quotesResult: ResultWrapper<List<QuoteDto>> = Uninitialized
 ) {
+    Log.d("DEBUG_MAIN", "QuoteList - $quotesResult")
     when (quotesResult) {
         Uninitialized -> Surface {}
         is Error -> Text(text = "Error ${quotesResult.error.message}")

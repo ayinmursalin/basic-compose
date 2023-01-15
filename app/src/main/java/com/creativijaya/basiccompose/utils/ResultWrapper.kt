@@ -1,8 +1,12 @@
 package com.creativijaya.basiccompose.utils
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transform
 
+@Stable
+@Immutable
 sealed class ResultWrapper<out T>(
     private val data: T?
 )
